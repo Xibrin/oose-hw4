@@ -40,6 +40,7 @@ public class Job {
 
     public Job() {
     }
+
     public Job(String title, Date datePosted, Date deadline, String domain, String location, boolean fullTime, boolean salaryBased, String requirements, int payAmount, Employer employer) {
         this.title = title;
         this.datePosted = datePosted;

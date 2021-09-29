@@ -5,6 +5,7 @@ import com.j256.ormlite.jdbc.JdbcConnectionSource;
 import com.j256.ormlite.support.ConnectionSource;
 import com.j256.ormlite.table.TableUtils;
 import model.Employer;
+import model.Job;
 import spark.Spark;
 
 import java.sql.SQLException;
@@ -18,6 +19,13 @@ public class Main {
         return DaoManager.createDao(connectionSource, Employer.class);
     }
 
+    private static Dao getJobORMLiteDao() throws SQLException {
+        final String URI = "jdbc:sqlite:./JBApp.db";
+        ConnectionSource connectionSource = new JdbcConnectionSource(URI);
+        TableUtils.createTableIfNotExists(connectionSource, Job.class);
+        return DaoManager.createDao(connectionSource, Job.class);
+    }
+
     public static void main(String[] args) {
 
         final int PORT_NUM = 7000;
@@ -25,6 +33,13 @@ public class Main {
 
         Spark.get("/employers", (req, res) -> {
             String results = new Gson().toJson(getEmployerORMLiteDao().queryForAll());
+            res.type("application/json");
+            res.status(200);
+            return results;
+        });
+
+        Spark.get("/jobs", (req, res) -> {
+            String results = new Gson().toJson(getJobORMLiteDao().queryForAll());
             res.type("application/json");
             res.status(200);
             return results;
