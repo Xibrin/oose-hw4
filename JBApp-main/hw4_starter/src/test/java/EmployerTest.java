@@ -111,6 +111,170 @@ public class EmployerTest {
             assertEquals("Food/Beverage", dao.queryForEq("name", "Kraft Heinz").get(0).getSector());
         }
 
+        @Test
+        public void testInsertEmployersWithSameName() throws SQLException {
+            Employer e1 = new Employer("Kraft Heinz", "Food", "A global food company!");
+            Employer e2 = new Employer("Kraft Heinz", "Drink", "A global beverage company!");
+            dao.create(e1);
+            Assertions.assertThrows(SQLException.class, () -> dao.create(e2));
+
+        }
+
+        @Test
+        public void testInsertEmployerWithSameSector() throws SQLException {
+            Employer e1 = new Employer("Coca Cola", "Drink", "A global beverage company!");
+            Employer e2 = new Employer("Kraft Heinz", "Drink", "Another global beverage company!");
+            dao.create(e1);
+            Assertions.assertDoesNotThrow(() -> dao.create(e2));
+            assertEquals(dao.queryForEq("name", "Kraft Heinz").get(0).getSector(),
+                    dao.queryForEq("name", "Coca Cola").get(0).getSector());
+        }
+
+        @Test
+        public void testInsertEmployerWithEmptyName() throws SQLException {
+            Employer e = new Employer("", "Drink", "A global beverage company!");
+            Assertions.assertDoesNotThrow(() -> dao.create(e));
+            assertEquals("", dao.queryForEq("name", "").get(0).getName());
+        }
+
+        @Test
+        public void testInsertEmployerIDEnteredManuallyNotTheSameAsInTable() throws SQLException {
+            Employer e = new Employer("Coca Cola", "Drink", "A global beverage company!");
+            e.setId(8);
+            Assertions.assertDoesNotThrow(() -> dao.create(e));
+            Assertions.assertNotEquals(8, dao.queryForEq("name", "Coca Cola").get(0).getId());
+        }
+
+        @Test
+        public void testUpdateIDToNotInTable() throws SQLException {
+            Employer e1 = new Employer("Kraft Heinz", "Food", "A global Food company!");
+            Employer e2 = new Employer("Coca Cola", "Drink", "A global beverage company!");
+            dao.create(e1);
+            dao.create(e2);
+            int id1 = dao.queryForEq("name", "Kraft Heinz").get(0).getId();
+            System.out.println(id1);
+            int id2 = dao.queryForEq("name", "Coca Cola").get(0).getId();
+            System.out.println(id2);
+            dao.updateId(e2, id1 - 1);
+            assertEquals(id1 - 1, dao.queryForEq("name", "Coca Cola").get(0).getId());
+            Assertions.assertNotEquals(id2, dao.queryForEq("name", "Coca Cola").get(0).getId());
+
+        }
+
+        @Test
+        public void testUpdateIDToInTable() throws SQLException {
+            Employer e1 = new Employer("Kraft Heinz", "Food", "A global Food company!");
+            Employer e2 = new Employer("Coca Cola", "Drink", "A global beverage company!");
+            dao.create(e1);
+            dao.create(e2);
+            int id = dao.queryForEq("name", "Kraft Heinz").get(0).getId();
+            Assertions.assertThrows(SQLException.class, () -> dao.updateId(e2, id));
+        }
+
+        @Test
+        public void testUpdateName() throws SQLException {
+            Employer e = new Employer("Kraft Heinz", "Food", "A global food and beverage company!");
+            dao.create(e);
+            e.setName("Cheese");
+            dao.createOrUpdate(e);
+            assertEquals("Cheese", dao.queryForEq("name", "Cheese").get(0).getName());
+        }
+
+        @Test
+        public void testUpdateSummary() throws SQLException {
+            Employer e = new Employer("Kraft Heinz", "Food", "A global food and beverage company!");
+            dao.create(e);
+            e.setSummary("The best company");
+            dao.createOrUpdate(e);
+            assertEquals("The best company", dao.queryForEq("name", "Kraft Heinz").get(0).getSummary());
+        }
+
+        @Test
+        public void testDeleteNonExistentIDDoesNothing() throws SQLException {
+            // create a new employer instance
+            Employer e1 = new Employer("Aryaman Shodhan", "CS", "A global food and beverage company!");
+            Employer e2 = new Employer("Ali Darvish", "CS", "A global food and beverage company!");
+            Employer e3 = new Employer("Dave Hovemeyer", "CS", "A cat rental company!");
+            Employer e4 = new Employer("Ali Madooei", "CS", "A global food and beverage company!");
+
+            List<Employer> emps = new ArrayList<>();
+            emps.add(e1);
+            emps.add(e2);
+            emps.add(e3);
+            emps.add(e4);
+            Employer toDelete = new Employer("Professor", "CS", "A global company!");
+            // try to insert into employers table. This must succeed!
+            Integer sum = 0;
+            dao.create(emps);
+            for (Employer val : dao.queryForEq("sector","CS")) {
+                sum += val.getId();
+            }
+
+            toDelete.setId(sum);
+            dao.delete(toDelete);
+
+            Assertions.assertTrue(dao.queryForEq("sector","CS").size() == 4);
+        }
+
+        @Test
+        public void testDeleteExistingID() throws SQLException {
+            // create a new employer instance
+            Employer e1 = new Employer("Kraft Heinz", "Food", "A global food and beverage company!");
+            Employer e2 = new Employer("Coca Cola", "Drink", "A global beverage company!");
+            // try to insert into employers table. This must succeed!
+            dao.create(e1);
+            e2.setId(dao.queryForEq("name", "Kraft Heinz").get(0).getId());
+            dao.delete(e2);
+            assertEquals(dao.queryForEq("name","Kraft Heinz").size(),0);
+        }
+
+        @Test
+        public void testDeleteCollectionOfExistingEmployers() throws SQLException {
+            // create a new employer instance
+            Employer e1 = new Employer("Aryaman Shodhan", "CS", "A global food and beverage company!");
+            Employer e2 = new Employer("Ali Darvish", "CS", "A global food and beverage company!");
+            Employer e3 = new Employer("Dave Hovemeyer", "CS", "A cat rental company!");
+            Employer e4 = new Employer("Ali Madooei", "CS", "A global food and beverage company!");
+            // try to insert into employers table. This must succeed!
+            List<Employer> emps = new ArrayList<>();
+            emps.add(e1);
+            emps.add(e2);
+            emps.add(e3);
+            emps.add(e4);
+            dao.create(emps);
+            dao.delete(emps);
+            Assertions.assertTrue(dao.queryForEq("sector", "CS").size()==0);
+            //assertEquals(dao.queryForEq("name","Kraft Heinz").size(),0);
+        }
+
+        @Test
+        public void testDeleteCollectionOfNonExistentEmployers() throws SQLException {
+            // create a new employer instance
+            Employer e1 = new Employer("Aryaman Shodhan", "CS", "A global food and beverage company!");
+            Employer e2 = new Employer("Ali Darvish", "CS", "A global food and beverage company!");
+            Employer e3 = new Employer("Dave Hovemeyer", "CS", "A cat rental company!");
+            Employer e4 = new Employer("Ali Madooei", "CS", "A global food and beverage company!");
+
+            Employer e5 = new Employer("Aryaman", "CS", "A global food and beverage company!");
+            Employer e6 = new Employer("Ali", "CS", "A global food and beverage company!");
+            Employer e7 = new Employer("Dave", "CS", "A cat rental company!");
+            Employer e8 = new Employer("Ali", "CS", "A global food and beverage company!");
+            // try to insert into employers table. This must succeed!
+            List<Employer> emps = new ArrayList<>();
+            List<Employer> emps2 = new ArrayList<>();
+            emps.add(e1);
+            emps.add(e2);
+            emps.add(e3);
+            emps.add(e4);
+            emps2.add(e5);
+            emps2.add(e6);
+            emps2.add(e7);
+            emps2.add(e8);
+            dao.create(emps);
+            dao.delete(emps2);
+            Assertions.assertTrue(dao.queryForEq("sector", "CS").size()==4);
+        }
+
         // TODO 1: Think of more test cases for all CRUD operations and add them below!
         //  Write a test case for each of the following scenarios and assert the expected outcome:
         //  C(reate):
