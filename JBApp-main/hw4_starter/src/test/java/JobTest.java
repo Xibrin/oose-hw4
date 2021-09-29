@@ -206,13 +206,21 @@ class JobAPITest {
     public void setUpAll() {
         client = new OkHttpClient();
     }
-
+    
     @Test
-    public void testHTTPGetJobsEndPoint() throws IOException {
-        // TODO 6: Write code to send a http get request using OkHttp to the
-        //  "jobs" endpoint and assert that the received status code is OK (200)!
-        //  Note: In order for this to work, you need to make sure your local sparkjava
-        //  server is running, before you run the JUnit test!
-    }
+        public void testHTTPGetJobsEndPoint() throws IOException {
+            // TODO 6: Write code to send a http get request using OkHttp to the
+            //  "jobs" endpoint and assert that the received status code is OK (200)!
+            //  Note: In order for this to work, you need to make sure your local sparkjava
+            //  server is running, before you run the JUnit test!
+            String endpoint = BASE_URL + "/jobs";
+            OkHttpClient client = new OkHttpClient();
+            Request request = new Request.Builder()
+                    .url(endpoint)
+                    .build();
+            Response response = client.newCall(request).execute();
+
+            assertEquals(response.code(),200);
+        }
 }
 }
