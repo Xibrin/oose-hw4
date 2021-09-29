@@ -23,7 +23,7 @@
 <tr>
 <td>
 <div class="infoBox" id="tests">
-<div class="counter">1</div>
+<div class="counter">17</div>
 <p>tests</p>
 </div>
 </td>
@@ -41,7 +41,7 @@
 </td>
 <td>
 <div class="infoBox" id="duration">
-<div class="counter">0.040s</div>
+<div class="counter">0.215s</div>
 <p>duration</p>
 </div>
 </td>
@@ -81,8 +81,88 @@
 </tr>
 </thead>
 <tr>
+<td class="success">testCreateNameNull()</td>
+<td class="success">0.003s</td>
+<td class="success">passed</td>
+</tr>
+<tr>
+<td class="success">testCreateSectorEmpty()</td>
+<td class="success">0.004s</td>
+<td class="success">passed</td>
+</tr>
+<tr>
+<td class="success">testDeleteAllFieldsMatch()</td>
+<td class="success">0.010s</td>
+<td class="success">passed</td>
+</tr>
+<tr>
+<td class="success">testDeleteCollectionOfExistingEmployers()</td>
+<td class="success">0.013s</td>
+<td class="success">passed</td>
+</tr>
+<tr>
+<td class="success">testDeleteCollectionOfNonExistentEmployers()</td>
+<td class="success">0.015s</td>
+<td class="success">passed</td>
+</tr>
+<tr>
+<td class="success">testDeleteExistingID()</td>
+<td class="success">0.008s</td>
+<td class="success">passed</td>
+</tr>
+<tr>
+<td class="success">testDeleteNonExistentIDDoesNothing()</td>
+<td class="success">0.005s</td>
+<td class="success">passed</td>
+</tr>
+<tr>
+<td class="success">testInsertEmployerIDEnteredManuallyNotTheSameAsInTable()</td>
+<td class="success">0.048s</td>
+<td class="success">passed</td>
+</tr>
+<tr>
+<td class="success">testInsertEmployerWithEmptyName()</td>
+<td class="success">0.008s</td>
+<td class="success">passed</td>
+</tr>
+<tr>
+<td class="success">testInsertEmployerWithSameSector()</td>
+<td class="success">0.008s</td>
+<td class="success">passed</td>
+</tr>
+<tr>
+<td class="success">testInsertEmployersWithSameName()</td>
+<td class="success">0.005s</td>
+<td class="success">passed</td>
+</tr>
+<tr>
+<td class="success">testReadMutipleEmployers()</td>
+<td class="success">0.009s</td>
+<td class="success">passed</td>
+</tr>
+<tr>
+<td class="success">testUpdateIDToInTable()</td>
+<td class="success">0.042s</td>
+<td class="success">passed</td>
+</tr>
+<tr>
+<td class="success">testUpdateIDToNotInTable()</td>
+<td class="success">0.009s</td>
+<td class="success">passed</td>
+</tr>
+<tr>
+<td class="success">testUpdateName()</td>
+<td class="success">0.011s</td>
+<td class="success">passed</td>
+</tr>
+<tr>
 <td class="success">testUpdateSector()</td>
-<td class="success">0.040s</td>
+<td class="success">0.006s</td>
+<td class="success">passed</td>
+</tr>
+<tr>
+<td class="success">testUpdateSummary()</td>
+<td class="success">0.011s</td>
 <td class="success">passed</td>
 </tr>
 </table>
@@ -90,10 +170,10 @@
 <div id="tab1" class="tab">
 <h2>Standard output</h2>
 <span class="code">
-<pre>2021-09-28 18:27:30,791 [WARNING] ANDROID Unable to get new instance of class com.j256.ormlite.android.AndroidLogBackend$AndroidLogBackendFactory, so had to use local log: com.j256.ormlite.android.AndroidLogBackend$AndroidLogBackendFactory
-2021-09-28 18:27:30,791 [WARNING] COMMONS_LOGGING Unable to get new instance of class com.j256.ormlite.logger.CommonsLoggingLogBackend$CommonsLoggingLogBackendFactory, so had to use local log: org/apache/commons/logging/LogFactory
-2021-09-28 18:27:30,791 [WARNING] LOG4J2 Unable to get new instance of class com.j256.ormlite.logger.Log4j2LogBackend$Log4j2LogBackendFactory, so had to use local log: org/apache/logging/log4j/LogManager
-2021-09-28 18:27:30,791 [WARNING] LOG4J Unable to get new instance of class com.j256.ormlite.logger.Log4jLogBackend$Log4jLogBackendFactory, so had to use local log: org/apache/log4j/Priority
+<pre>2021-09-28 23:28:30,580 [WARNING] ANDROID Unable to get new instance of class com.j256.ormlite.android.AndroidLogBackend$AndroidLogBackendFactory, so had to use local log: com.j256.ormlite.android.AndroidLogBackend$AndroidLogBackendFactory
+2021-09-28 23:28:30,582 [WARNING] COMMONS_LOGGING Unable to get new instance of class com.j256.ormlite.logger.CommonsLoggingLogBackend$CommonsLoggingLogBackendFactory, so had to use local log: org/apache/commons/logging/LogFactory
+2021-09-28 23:28:30,583 [WARNING] LOG4J2 Unable to get new instance of class com.j256.ormlite.logger.Log4j2LogBackend$Log4j2LogBackendFactory, so had to use local log: org/apache/logging/log4j/LogManager
+2021-09-28 23:28:30,584 [WARNING] LOG4J Unable to get new instance of class com.j256.ormlite.logger.Log4jLogBackend$Log4jLogBackendFactory, so had to use local log: org/apache/log4j/Priority
 </pre>
 </span>
 </div>
@@ -102,6 +182,22 @@
 <span class="code">
 <pre>[Test worker] INFO com.j256.ormlite.table.TableUtils - creating table 'employers'
 [Test worker] INFO com.j256.ormlite.table.TableUtils - executed create table statement changed 0 rows: CREATE TABLE IF NOT EXISTS `employers` (`id` INTEGER PRIMARY KEY AUTOINCREMENT , `name` VARCHAR NOT NULL , `sector` VARCHAR NOT NULL , `summary` VARCHAR ,  UNIQUE (`name`)) 
+[Test worker] INFO com.j256.ormlite.table.TableUtils - clearing table 'employers' with 'DELETE FROM `employers`
+[Test worker] INFO com.j256.ormlite.table.TableUtils - clearing table 'employers' with 'DELETE FROM `employers`
+[Test worker] INFO com.j256.ormlite.table.TableUtils - clearing table 'employers' with 'DELETE FROM `employers`
+[Test worker] INFO com.j256.ormlite.table.TableUtils - clearing table 'employers' with 'DELETE FROM `employers`
+[Test worker] INFO com.j256.ormlite.table.TableUtils - clearing table 'employers' with 'DELETE FROM `employers`
+[Test worker] INFO com.j256.ormlite.table.TableUtils - clearing table 'employers' with 'DELETE FROM `employers`
+[Test worker] INFO com.j256.ormlite.table.TableUtils - clearing table 'employers' with 'DELETE FROM `employers`
+[Test worker] INFO com.j256.ormlite.table.TableUtils - clearing table 'employers' with 'DELETE FROM `employers`
+[Test worker] INFO com.j256.ormlite.table.TableUtils - clearing table 'employers' with 'DELETE FROM `employers`
+[Test worker] INFO com.j256.ormlite.table.TableUtils - clearing table 'employers' with 'DELETE FROM `employers`
+[Test worker] INFO com.j256.ormlite.table.TableUtils - clearing table 'employers' with 'DELETE FROM `employers`
+[Test worker] INFO com.j256.ormlite.table.TableUtils - clearing table 'employers' with 'DELETE FROM `employers`
+[Test worker] INFO com.j256.ormlite.table.TableUtils - clearing table 'employers' with 'DELETE FROM `employers`
+[Test worker] INFO com.j256.ormlite.table.TableUtils - clearing table 'employers' with 'DELETE FROM `employers`
+[Test worker] INFO com.j256.ormlite.table.TableUtils - clearing table 'employers' with 'DELETE FROM `employers`
+[Test worker] INFO com.j256.ormlite.table.TableUtils - clearing table 'employers' with 'DELETE FROM `employers`
 [Test worker] INFO com.j256.ormlite.table.TableUtils - clearing table 'employers' with 'DELETE FROM `employers`
 </pre>
 </span>
@@ -114,7 +210,7 @@
 <input id="line-wrapping-toggle" type="checkbox" autocomplete="off"/>
 </label>
 </div>Generated by 
-<a href="http://www.gradle.org">Gradle 7.1</a> at Sep 28, 2021 6:27:31 PM</p>
+<a href="http://www.gradle.org">Gradle 7.1</a> at Sep 28, 2021, 11:28:31 PM</p>
 </div>
 </div>
 </body>
