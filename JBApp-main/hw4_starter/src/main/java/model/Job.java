@@ -1,5 +1,8 @@
 package model;
 
+import com.j256.ormlite.field.DatabaseField;
+import com.j256.ormlite.table.DatabaseTable;
+
 import java.util.Date;
 import java.util.Objects;
 
@@ -7,19 +10,33 @@ import java.util.Objects;
 //  ORMLite annotations so that you can easily create the "jobs" table in Main.java
 //  using ORMLite's TableUtil class.
 
+@DatabaseTable(tableName = "Jobs")
 public class Job {
 
+    @DatabaseField(generatedId = true)
     private int id;
+    @DatabaseField(canBeNull = false, unique = true)
     private String title;
+    @DatabaseField(canBeNull = false)
     private Date datePosted;
+    @DatabaseField(canBeNull = false)
     private Date deadline;
+    @DatabaseField(canBeNull = false)
     private String domain;
+    @DatabaseField(canBeNull = false)
     private String location;
+    @DatabaseField(canBeNull = false)
     private boolean fullTime;
+    @DatabaseField(canBeNull = false)
     private boolean salaryBased;
+    @DatabaseField(canBeNull = false)
     private String requirements;
+    @DatabaseField(canBeNull = false)
     private int payAmount;
+    @DatabaseField(canBeNull = false)
     private Employer employer;
+    @DatabaseField(canBeNull = false)
+    private int employerId;
 
     public Job() {
     }
@@ -34,6 +51,7 @@ public class Job {
         this.requirements = requirements;
         this.payAmount = payAmount;
         this.employer = employer;
+        this.employerId = employer.getId();
     }
 
     public int getId() {
@@ -78,8 +96,8 @@ public class Job {
         return payAmount;
     }
 
-    public Employer getEmployer() {
-        return employer;
+    public int getEmployer() {
+        return employerId;
     }
 
     public void setId(int id) { this.id = id; }
@@ -124,16 +142,24 @@ public class Job {
         this.employer = employer;
     }
 
+    public void setEmployerId(int employerId) {
+        this.employerId = employerId;
+    }
+
     @Override
     public boolean equals(Object o) {
         if (this == o) return true;
         if (o == null || getClass() != o.getClass()) return false;
         Job job = (Job) o;
-        return id == job.id && fullTime == job.fullTime && salaryBased == job.salaryBased && payAmount == job.payAmount && title.equals(job.title) && Objects.equals(datePosted, job.datePosted) && Objects.equals(deadline, job.deadline) && Objects.equals(domain, job.domain) && Objects.equals(location, job.location) && Objects.equals(requirements, job.requirements) && Objects.equals(employer, job.employer);
+        return id == job.id && fullTime == job.fullTime && salaryBased == job.salaryBased && payAmount == job.payAmount
+                && title.equals(job.title) && Objects.equals(datePosted, job.datePosted)
+                && Objects.equals(deadline, job.deadline) && Objects.equals(domain, job.domain)
+                && Objects.equals(location, job.location) && Objects.equals(requirements, job.requirements)
+                && Objects.equals(employer, job.employer) && Objects.equals(employerId, job.employerId);
     }
 
     @Override
     public int hashCode() {
-        return Objects.hash(id, title, datePosted, deadline, domain, location, fullTime, salaryBased, requirements, payAmount, employer);
+        return Objects.hash(id, title, datePosted, deadline, domain, location, fullTime, salaryBased, requirements, payAmount, employer, employerId);
     }
 }
