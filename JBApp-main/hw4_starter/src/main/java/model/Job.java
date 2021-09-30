@@ -33,9 +33,8 @@ public class Job {
     private String requirements;
     @DatabaseField(canBeNull = false)
     private int payAmount;
-    @DatabaseField(canBeNull = false)
     private Employer employer;
-    @DatabaseField(canBeNull = false, foreign = true)
+    @DatabaseField(canBeNull = false)
     private int employerId;
 
     public Job() {

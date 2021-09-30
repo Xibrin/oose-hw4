@@ -168,13 +168,12 @@ private final String URI = "jdbc:sqlite:./JBApp.db";
         @Test
         public void testUpdateID() throws SQLException {
             Employer e = new Employer("First Solar", "Energy", "A leading global provider of comprehensive PV solar solutions!");
+            e.setId(10);
             Job j1 = new Job("SWE",new Date(2021, 7, 2), new Date(2021, 9, 1), "tech", "LA", true, true, "Must be familiar with Java", 120000, e);
             int id = j1.getId();
             dao.create(j1);
 
-            j1.setId(3145);
-
-            dao.createOrUpdate(j1);
+            dao.updateId(j1, 3145);
 
             assertEquals(dao.queryForAll().get(0).getId(), 3145);
         }
