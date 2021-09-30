@@ -162,8 +162,14 @@ class JobORMLiteDaoTest {
         public void testUpdateID() throws SQLException {
             Employer e = new Employer("First Solar", "Energy", "A leading global provider of comprehensive PV solar solutions!");
             Job j1 = new Job("SWE",new Date(2021, 7, 2), new Date(2021, 9, 1), "tech", "LA", true, true, "Must be familiar with Java", 120000, e);
+            int id = j1.getId();
             dao.create(j1);
-            assertEquals(j1.id, 1);
+            
+            j1.setId(3145);
+
+            dao.createOrUpdate(j1);
+
+            assertEquals(dao.queryForAll().get(0).getId(), 3145);
         }
 
         @Test
@@ -184,7 +190,18 @@ class JobORMLiteDaoTest {
         }
 
         @Test
-        public void testDelete() throws SQLException {
+        public void testDeleteJobDoesNotExist() throws SQLException {
+            Employer e = new Employer("First Solar", "Energy", "A leading global provider of comprehensive PV solar solutions!");
+
+            Job j1 = new Job("SWE",new Date(2021, 7, 2), new Date(2021, 9, 1), "tech", "LA", true, true, "Must be familiar with Java", 120000, e);
+            Job j2 = new Job("SDE",new Date(2021, 6, 2), new Date(2021, 12, 1), "tech", "NYC", true, true, "Must be familiar with Java", 100000, e);
+            Job j3 = new Job("SDE I",new Date(2021, 6, 4), new Date(2021, 12, 1), "tech", "SF", true, true, "Must be familiar with Java", 100000, e);
+
+            dao.create(j1);
+            dao.create(j2);
+            dao.delete(j3);
+            
+            assertEquals(2, dao.queryForAll().size());
         }
 
     // TODO 5: Similar to what was done in EmployerTest.EmployerORMLiteDaoTest class, write JUnit tests
