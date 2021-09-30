@@ -319,7 +319,6 @@ public class EmployerTest {
         @Test
         public void testHTTPGetEmployersEndpoint() throws IOException {
             String endpoint = BASE_URL + "/employers";
-            client = new OkHttpClient();
             Request request = new Request.Builder()
                     .url(endpoint)
                     .build();

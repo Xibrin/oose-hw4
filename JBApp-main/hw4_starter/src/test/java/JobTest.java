@@ -245,7 +245,6 @@ private final String URI = "jdbc:sqlite:./JBApp.db";
             //  Note: In order for this to work, you need to make sure your local sparkjava
             //  server is running, before you run the JUnit test!
             String endpoint = BASE_URL + "/jobs";
-            client = new OkHttpClient();
             Request request = new Request.Builder()
                     .url(endpoint)
                     .build();
