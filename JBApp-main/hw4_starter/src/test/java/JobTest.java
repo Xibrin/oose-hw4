@@ -27,7 +27,6 @@ private final String URI = "jdbc:sqlite:./JBApp.db";
 
         private ConnectionSource connectionSource;
         private Dao<Job, Integer> dao;
-        private Dao<Employer, Integer> edao;
 
         @BeforeAll
         public void setUpAll() throws SQLException {
@@ -35,8 +34,6 @@ private final String URI = "jdbc:sqlite:./JBApp.db";
             TableUtils.createTableIfNotExists(connectionSource, Job.class);
             dao = DaoManager.createDao(connectionSource, Job.class);
 
-            TableUtils.createTableIfNotExists(connectionSource, Employer.class);
-            edao = DaoManager.createDao(connectionSource, Employer.class);
         }
 
         // delete all rows in the jobs table before each test case
@@ -47,14 +44,16 @@ private final String URI = "jdbc:sqlite:./JBApp.db";
 
         @Test
         public void testCreateNullFields() {
-            Job j = new Job(null,null, null, null, null, true, true, null, 0, null);
+            Employer e = new Employer("Salesforce", "Tech", "An American cloud-based software company focused on customer relationship management services!");
+            e.setId(2);
+            Job j = new Job(null,null, null, null, null, true, true, null, 0, e);
             Assertions.assertThrows(SQLException.class, () -> dao.create(j));
         }
 
         @Test
         public void testCreateMultipleJobs() throws SQLException {
             Employer e = new Employer("Salesforce", "Tech", "An American cloud-based software company focused on customer relationship management services!");
-            edao.create(e);
+            e.setId(2);
             List<Job> jobs = new ArrayList<>();
             jobs.add(new Job("SWE",new Date(2021, 6, 2), new Date(2021, 12, 1), "tech", "NYC", true, true, "Must be familiar with Java", 100000, e));
             jobs.add(new Job("SDE ",new Date(2021, 6, 5), new Date(2021, 12, 1), "tech", "Chicago", true, true, "Must be familiar with Java", 120000, e));
@@ -66,27 +65,28 @@ private final String URI = "jdbc:sqlite:./JBApp.db";
 
             List<Job> jobRead = dao.queryForAll();
 
-            assertEquals(jobRead, jobs);
+            assertEquals(jobRead.size(), jobs.size());
         }
 
         @Test
         public void testUpdatingJobPay() throws SQLException {
             Employer e = new Employer("First Solar", "Energy", "A leading global provider of comprehensive PV solar solutions!");
+            e.setId(2);
             Job newJ = new Job("SWE",new Date(2021, 6, 2), new Date(2021, 12, 1), "tech", "NYC", true, true, "Must be familiar with Java", 100000, e);
-            newJ.setId(1234);
             dao.create(newJ);
             newJ.setPayAmount(130000);
-            dao.createOrUpdate(newJ);
-            Job inserted = dao.queryForId(1234);
+            dao.update(newJ);
+            Job inserted = dao.queryForId(newJ.getId());
             assertEquals(130000, inserted.getPayAmount());
         }
         @Test
         public void testNonUniqueJobTitle() {
             Employer e = new Employer("First Solar", "Energy", "A leading global provider of comprehensive PV solar solutions!");
+            e.setId(2);
             List<Job> jobs = new ArrayList<>();
 
             Job j1 = new Job("SWE",new Date(2021, 7, 2), new Date(2021, 9, 1), "tech", "LA", true, true, "Must be familiar with Java", 120000, e);
-            Job j2 = new Job("SDE",new Date(2021, 6, 2), new Date(2021, 12, 1), "tech", "NYC", true, true, "Must be familiar with Java", 100000, e);
+            Job j2 = new Job("SWE",new Date(2021, 6, 2), new Date(2021, 12, 1), "tech", "NYC", true, true, "Must be familiar with Java", 100000, e);
 
             jobs.add(j1);
             jobs.add(j2);
@@ -97,6 +97,7 @@ private final String URI = "jdbc:sqlite:./JBApp.db";
         @Test
         public void testDeleteJob() throws SQLException {
             Employer e = new Employer("First Solar", "Energy", "A leading global provider of comprehensive PV solar solutions!");
+            e.setId(2);
 
             Job j1 = new Job("SWE",new Date(2021, 7, 2), new Date(2021, 9, 1), "tech", "LA", true, true, "Must be familiar with Java", 120000, e);
             dao.create(j1);
@@ -110,6 +111,7 @@ private final String URI = "jdbc:sqlite:./JBApp.db";
         @Test
         public void testRemoveSomeJobs() throws SQLException {
             Employer e = new Employer("First Solar", "Energy", "A leading global provider of comprehensive PV solar solutions!");
+            e.setId(2);
             List<Job> jobs = new ArrayList<>();
 
             Job j1 = new Job("SWE",new Date(2021, 7, 2), new Date(2021, 9, 1), "tech", "LA", true, true, "Must be familiar with Java", 120000, e);
@@ -130,7 +132,7 @@ private final String URI = "jdbc:sqlite:./JBApp.db";
         @Test
         public void testUpdateIDExisting() throws SQLException{
             Employer e = new Employer("First Solar", "Energy", "A leading global provider of comprehensive PV solar solutions!");
-
+            e.setId(2);
             Job j1 = new Job("SWE",new Date(2021, 7, 2), new Date(2021, 9, 1), "tech", "LA", true, true, "Must be familiar with Java", 120000, e);
             Job j2 = new Job("SDE",new Date(2021, 6, 2), new Date(2021, 12, 1), "tech", "NYC", true, true, "Must be familiar with Java", 100000, e);
             Job j3 = new Job("SDE I",new Date(2021, 6, 4), new Date(2021, 12, 1), "tech", "SF", true, true, "Must be familiar with Java", 100000, e);
@@ -146,6 +148,7 @@ private final String URI = "jdbc:sqlite:./JBApp.db";
         @Test
         public void testCreateJobSameInfoDifferentTitle() throws SQLException {
             Employer e = new Employer("First Solar", "Energy", "A leading global provider of comprehensive PV solar solutions!");
+            e.setId(2);
             Job j1 = new Job("SWE",new Date(2021, 7, 2), new Date(2021, 9, 1), "tech", "LA", true, true, "Must be familiar with Java", 120000, e);
             Job j2 = new Job("SDE",new Date(2021, 7, 2), new Date(2021, 9, 1), "tech", "LA", true, true, "Must be familiar with Java", 120000, e);
 
@@ -156,11 +159,15 @@ private final String URI = "jdbc:sqlite:./JBApp.db";
         @Test
         public void testUpdateMultipleTimes() throws SQLException {
             Employer e = new Employer("First Solar", "Energy", "A leading global provider of comprehensive PV solar solutions!");
+            e.setId(2);
             Job j1 = new Job("SWE",new Date(2021, 7, 2), new Date(2021, 9, 1), "tech", "LA", true, true, "Must be familiar with Java", 120000, e);
             dao.create(j1);
             j1.setDomain("Finance");
+            dao.update(j1);
             j1.setDomain("Academia");
+            dao.update(j1);
             j1.setDomain("Business");
+            dao.update(j1);
 
             assertEquals("Business", dao.queryForAll().get(0).getDomain());
         }
@@ -181,6 +188,7 @@ private final String URI = "jdbc:sqlite:./JBApp.db";
         @Test
         public void testDeleteAllItems() throws SQLException {
             Employer e = new Employer("Salesforce", "Tech", "An American cloud-based software company focused on customer relationship management services!");
+            e.setId(20);
             List<Job> jobs = new ArrayList<>();
             jobs.add(new Job("SWE",new Date(2021, 6, 2), new Date(2021, 12, 1), "tech", "NYC", true, true, "Must be familiar with Java", 100000, e));
             jobs.add(new Job("SDE ",new Date(2021, 6, 5), new Date(2021, 12, 1), "tech", "Chicago", true, true, "Must be familiar with Java", 120000, e));
@@ -198,7 +206,7 @@ private final String URI = "jdbc:sqlite:./JBApp.db";
         @Test
         public void testDeleteJobDoesNotExist() throws SQLException {
             Employer e = new Employer("First Solar", "Energy", "A leading global provider of comprehensive PV solar solutions!");
-
+            e.setId(20);
             Job j1 = new Job("SWE",new Date(2021, 7, 2), new Date(2021, 9, 1), "tech", "LA", true, true, "Must be familiar with Java", 120000, e);
             Job j2 = new Job("SDE",new Date(2021, 6, 2), new Date(2021, 12, 1), "tech", "NYC", true, true, "Must be familiar with Java", 100000, e);
             Job j3 = new Job("SDE I",new Date(2021, 6, 4), new Date(2021, 12, 1), "tech", "SF", true, true, "Must be familiar with Java", 100000, e);
