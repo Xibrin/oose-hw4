@@ -6,6 +6,8 @@ import com.j256.ormlite.table.TableUtils;
 import model.Employer;
 import model.Job;
 import okhttp3.OkHttpClient;
+import okhttp3.Request;
+import okhttp3.Response;
 import org.junit.jupiter.api.*;
 import java.io.IOException;
 import java.sql.Date;
@@ -19,27 +21,31 @@ public class JobTest {
 
 private final String URI = "jdbc:sqlite:./JBApp.db";
 
-@Nested
-@TestInstance(TestInstance.Lifecycle.PER_CLASS)
-class JobORMLiteDaoTest {
+    @Nested
+    @TestInstance(TestInstance.Lifecycle.PER_CLASS)
+    class JobORMLiteDaoTest {
 
-    private ConnectionSource connectionSource;
-    private Dao<Job, Integer> dao;
+        private ConnectionSource connectionSource;
+        private Dao<Job, Integer> dao;
+        private Dao<Employer, Integer> edao;
 
-    @BeforeAll
-    public void setUpAll() throws SQLException {
-        connectionSource = new JdbcConnectionSource(URI);
-        TableUtils.createTableIfNotExists(connectionSource, Job.class);
-        dao = DaoManager.createDao(connectionSource, Job.class);
-    }
+        @BeforeAll
+        public void setUpAll() throws SQLException {
+            connectionSource = new JdbcConnectionSource(URI);
+            TableUtils.createTableIfNotExists(connectionSource, Job.class);
+            dao = DaoManager.createDao(connectionSource, Job.class);
 
-    // delete all rows in the jobs table before each test case
-    @BeforeEach
-    public void setUpEach() throws SQLException {
-        TableUtils.clearTable(connectionSource, Job.class);
-    }
+            TableUtils.createTableIfNotExists(connectionSource, Employer.class);
+            edao = DaoManager.createDao(connectionSource, Employer.class);
+        }
 
-    @Test
+        // delete all rows in the jobs table before each test case
+        @BeforeEach
+        public void setUpEach() throws SQLException {
+            TableUtils.clearTable(connectionSource, Job.class);
+        }
+
+        @Test
         public void testCreateNullFields() {
             Job j = new Job(null,null, null, null, null, true, true, null, 0, null);
             Assertions.assertThrows(SQLException.class, () -> dao.create(j));
@@ -48,6 +54,7 @@ class JobORMLiteDaoTest {
         @Test
         public void testCreateMultipleJobs() throws SQLException {
             Employer e = new Employer("Salesforce", "Tech", "An American cloud-based software company focused on customer relationship management services!");
+            edao.create(e);
             List<Job> jobs = new ArrayList<>();
             jobs.add(new Job("SWE",new Date(2021, 6, 2), new Date(2021, 12, 1), "tech", "NYC", true, true, "Must be familiar with Java", 100000, e));
             jobs.add(new Job("SDE ",new Date(2021, 6, 5), new Date(2021, 12, 1), "tech", "Chicago", true, true, "Must be familiar with Java", 120000, e));
@@ -164,7 +171,7 @@ class JobORMLiteDaoTest {
             Job j1 = new Job("SWE",new Date(2021, 7, 2), new Date(2021, 9, 1), "tech", "LA", true, true, "Must be familiar with Java", 120000, e);
             int id = j1.getId();
             dao.create(j1);
-            
+
             j1.setId(3145);
 
             dao.createOrUpdate(j1);
@@ -184,7 +191,7 @@ class JobORMLiteDaoTest {
 
             dao.create(jobs);
 
-            doa.delete(jobs);
+            dao.delete(jobs);
 
             assertEquals(0, dao.queryForAll().size());
         }
@@ -200,44 +207,44 @@ class JobORMLiteDaoTest {
             dao.create(j1);
             dao.create(j2);
             dao.delete(j3);
-            
+
             assertEquals(2, dao.queryForAll().size());
         }
 
-    // TODO 5: Similar to what was done in EmployerTest.EmployerORMLiteDaoTest class, write JUnit tests
-    //  to test basic CRUD operations on the jobs table! Think of interesting test cases and
-    //  write at least four different test cases for each of the C(reate)/U(pdate)/D(elete)
-    //  operations!
-    //  Note: You need to (write code to) create the "jobs" table before writing your test cases!
-}
-
-
-@Nested
-@TestInstance(TestInstance.Lifecycle.PER_CLASS)
-class JobAPITest {
-
-    final String BASE_URL = "http://localhost:7000";
-    private OkHttpClient client;
-
-    @BeforeAll
-    public void setUpAll() {
-        client = new OkHttpClient();
+        // TODO 5: Similar to what was done in EmployerTest.EmployerORMLiteDaoTest class, write JUnit tests
+        //  to test basic CRUD operations on the jobs table! Think of interesting test cases and
+        //  write at least four different test cases for each of the C(reate)/U(pdate)/D(elete)
+        //  operations!
+        //  Note: You need to (write code to) create the "jobs" table before writing your test cases!
     }
-    
-    @Test
+
+
+    @Nested
+    @TestInstance(TestInstance.Lifecycle.PER_CLASS)
+    class JobAPITest {
+
+        final String BASE_URL = "http://localhost:7000";
+        private OkHttpClient client;
+
+        @BeforeAll
+        public void setUpAll() {
+            client = new OkHttpClient();
+        }
+
+        @Test
         public void testHTTPGetJobsEndPoint() throws IOException {
             // TODO 6: Write code to send a http get request using OkHttp to the
             //  "jobs" endpoint and assert that the received status code is OK (200)!
             //  Note: In order for this to work, you need to make sure your local sparkjava
             //  server is running, before you run the JUnit test!
             String endpoint = BASE_URL + "/jobs";
-            OkHttpClient client = new OkHttpClient();
+            client = new OkHttpClient();
             Request request = new Request.Builder()
                     .url(endpoint)
                     .build();
             Response response = client.newCall(request).execute();
 
-            assertEquals(response.code(),200);
+            assertEquals(200, response.code());
         }
-}
+    }
 }

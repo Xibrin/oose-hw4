@@ -319,13 +319,13 @@ public class EmployerTest {
         @Test
         public void testHTTPGetEmployersEndpoint() throws IOException {
             String endpoint = BASE_URL + "/employers";
-            OkHttpClient client = new OkHttpClient();
+            client = new OkHttpClient();
             Request request = new Request.Builder()
                     .url(endpoint)
                     .build();
             Response response = client.newCall(request).execute();
 
-            assertEquals(response.code(),200);
+            assertEquals(200,response.code());
             // TODO 2: Write code to send a http get request using OkHttp to thr
             //  "employers" endpoint and assert that the received status code is OK (200)!
             //  Note: In order for this to work, you need to make sure your local sparkjava

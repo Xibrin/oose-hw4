@@ -10,7 +10,7 @@ import java.util.Objects;
 //  ORMLite annotations so that you can easily create the "jobs" table in Main.java
 //  using ORMLite's TableUtil class.
 
-@DatabaseTable(tableName = "Jobs")
+@DatabaseTable(tableName = "jobs")
 public class Job {
 
     @DatabaseField(generatedId = true)
@@ -35,7 +35,7 @@ public class Job {
     private int payAmount;
     @DatabaseField(canBeNull = false)
     private Employer employer;
-    @DatabaseField(canBeNull = false)
+    @DatabaseField(canBeNull = false, foreign = true)
     private int employerId;
 
     public Job() {
